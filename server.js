@@ -17,31 +17,31 @@ app.get('/products', (req, res) => {
     res.json(products);
 });
 
-app.post('/products', (req, res) => {
-    const newProduct = {
-        id: products.length + 1,
-        name: req.body.name,
-        price: req.body.price
-    };
-
-    if (!newProduct.name || !newProduct.price) {
-        return res.status(400).json({ message: 'Name and price are required' })
+app.get('/products/search', (req, res) => {
+    const searchTerm = req.query.name?.toLowerCase();
+    if (!searchTerm) {
+        return res.status(400).json({ message: 'Search term "name" is required' });
     }
 
-    products.push(newProduct);
-    res.status(201).json({
-        message: 'Product added',
-        product: newProduct
-    })
+    const filteredProducts = products.filter(product => 
+        product.name.toLowerCase().includes(searchTerm)
+    );
+
+    res.json(filteredProducts);
 });
 
-app.use((req, res) => {
-    res.status(404).send('Page not found :(');
-})
+app.post('/products', (req, res) => {
+    
+    let filteredProducts = [...products];
+    const maxPrice = parseFloat(req.query.maxPrice);
 
-app.listen(3000, () => {
-    console.log('The server is working! Open http://localhost:3000')
+    if(maxPrice) {
+        filteredProducts = filteredProducts.filter(product => product.price <= maxPrice);
+    }
+
+    res.json(filteredProducts);
 });
+
 
 app.put('/products/:id', (req, res) => {
     const id = parseInt(req.params.id);
@@ -74,4 +74,14 @@ app.delete('/products/:id', (req, res) => {
         product: deletedProduct
     });
 });
+
+app.use((req, res) => {
+    res.status(404).send('Page not found :(');
+})
+
+app.listen(3000, () => {
+    console.log('The server is working! Open http://localhost:3000')
+});
+
+
 
