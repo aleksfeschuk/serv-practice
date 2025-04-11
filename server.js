@@ -42,3 +42,21 @@ app.use((req, res) => {
 app.listen(3000, () => {
     console.log('The server is working! Open http://localhost:3000')
 });
+
+app.put('/products/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const product = products.find(p => p.id === id);
+
+    if (!product) {
+        return res.status(404).json({ message: 'Poduct not found'});
+    }
+
+    product.name = req.body.name || product.name;
+    product.price = req.body.price || product.price;
+
+    res.json({
+        message: 'Product updated',
+        product
+    });
+});
+
