@@ -48,7 +48,7 @@ app.put('/products/:id', (req, res) => {
     const product = products.find(p => p.id === id);
 
     if (!product) {
-        return res.status(404).json({ message: 'Poduct not found'});
+        return res.status(404).json({ message: 'Product not found'});
     }
 
     product.name = req.body.name || product.name;
@@ -57,6 +57,21 @@ app.put('/products/:id', (req, res) => {
     res.json({
         message: 'Product updated',
         product
+    });
+});
+
+app.delete('/products/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const productIndex = products.findIndex(p => p.id === id);
+
+    if (productIndex === -1) {
+        return res.status(404).json({message: 'Product not found' });
+    }
+
+    const deletedProduct = products.splice(productIndex, 1)[0]; 
+    res.json({
+        message: 'Product deleted',
+        product: deletedProduct
     });
 });
 
